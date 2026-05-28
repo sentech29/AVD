@@ -22,6 +22,9 @@ secret.auto.tfvars
 *.key
 *.crt
 
+# Terraform storage folder
+Storage/
+
 # VS Code
 .vscode/
 
