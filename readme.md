@@ -1,0 +1,1 @@
+This is for Azure infra deployment with help of terraform
