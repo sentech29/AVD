@@ -36,12 +36,12 @@ stages:
       - job: Init
         displayName: 'Init Terraform'
         steps:
-          - task: TerraformInstaller@0
+          - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
 
-          - task: TerraformCLI@0
+          - task: TerraformTaskV4@4
             displayName: 'Terraform init'
             inputs:
               provider: 'azurerm'
@@ -63,7 +63,7 @@ stages:
       - job: Plan
         displayName: 'Plan Terraform'
         steps:
-          - task: TerraformCLI@0
+          - task: TerraformTaskV4@4
             displayName: 'Terraform plan'
             inputs:
               provider: 'azurerm'
@@ -92,7 +92,7 @@ stages:
           - download: current
             artifact: 'tfplan'
 
-          - task: TerraformCLI@0
+          - task: TerraformTaskV4@4
             displayName: 'Terraform apply'
             inputs:
               provider: 'azurerm'
