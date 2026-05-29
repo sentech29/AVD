@@ -10,6 +10,7 @@ override.tf.json
 *.backup.*
 .terraform.tfstate.lock.info
 terraform.tfstate.lock
+.tfvars
 
 # Local environment files
 *.tfvars
