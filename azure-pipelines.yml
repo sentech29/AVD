@@ -64,11 +64,26 @@ stages:
       - job: Plan
         displayName: 'Plan Terraform'
         steps:
-          # FIXED: Added installer to this job
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
+
+          # FIXED: Added required Init step before Plan
+          - task: TerraformTaskV4@4
+            displayName: 'Initialize Backend for Plan'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '.'
+              backendType: 'azurerm'
+              ensureBackend: true
+              backendServiceArm: '$(azureServiceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroupName)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
+              enableTelemetry: false
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform plan'
@@ -99,11 +114,26 @@ stages:
           - download: current
             artifact: 'tfplan'
 
-          # FIXED: Added installer to this job
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
+
+          # FIXED: Added required Init step before Apply
+          - task: TerraformTaskV4@4
+            displayName: 'Initialize Backend for Apply'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '.'
+              backendType: 'azurerm'
+              ensureBackend: true
+              backendServiceArm: '$(azureServiceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroupName)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
+              enableTelemetry: false
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform apply'
