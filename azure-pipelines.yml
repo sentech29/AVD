@@ -64,6 +64,12 @@ stages:
       - job: Plan
         displayName: 'Plan Terraform'
         steps:
+          # FIXED: Added installer to this job
+          - task: TerraformInstaller@1
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: '$(terraformVersion)'
+
           - task: TerraformTaskV4@4
             displayName: 'Terraform plan'
             inputs:
@@ -92,6 +98,12 @@ stages:
         steps:
           - download: current
             artifact: 'tfplan'
+
+          # FIXED: Added installer to this job
+          - task: TerraformInstaller@1
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: '$(terraformVersion)'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform apply'
