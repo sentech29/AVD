@@ -1,0 +1,105 @@
+\\# Azure Pipelines YAML file for Terraform deployment
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+parameters:
+  - name: targetEnvironment
+    type: string
+    default: dev
+    values:
+      - dev
+      - staging
+      - prod
+
+variables:
+  terraformVersion: '1.6.6'
+  azureServiceConnection: 'Azure-Pipeline-SC'
+  backendResourceGroupName: 'tfstate-rg'
+  backendStorageAccountName: 'senlab029tfstate'
+  backendContainerName: 'tfstate'
+  environment: ${{ parameters.targetEnvironment }}
+  backendKey: 'terraform-${{ parameters.targetEnvironment }}.tfstate'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: TerraformInit
+    displayName: 'Terraform Init - ${{ parameters.targetEnvironment }}'
+    jobs:
+      - job: Init
+        displayName: 'Init Terraform'
+        steps:
+          - task: TerraformInstaller@1
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: '$(terraformVersion)'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '.'
+              backendType: 'azurerm'
+              ensureBackend: true
+              backendServiceArm: '$(azureServiceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroupName)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
+              enableTelemetry: false
+
+  - stage: TerraformPlan
+    displayName: 'Terraform Plan - ${{ parameters.targetEnvironment }}'
+    dependsOn: TerraformInit
+    jobs:
+      - job: Plan
+        displayName: 'Plan Terraform'
+        steps:
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform plan'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '.'
+              environmentServiceNameAzureRM: '$(azureServiceConnection)'
+              vars: |
+                environment=$(environment)
+              ensureBackend: true
+              enableTelemetry: false
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Terraform plan'
+            inputs:
+              targetPath: '$(Build.SourcesDirectory)'
+              artifact: 'tfplan'
+
+  - stage: TerraformApply
+    displayName: 'Terraform Apply - ${{ parameters.targetEnvironment }}'
+    dependsOn: TerraformPlan
+    condition: and(succeeded(), or(eq(variables['Build.Reason'], 'Manual'), eq('${{ parameters.targetEnvironment }}', 'dev')))
+    jobs:
+      - job: Apply
+        displayName: 'Apply Terraform'
+        steps:
+          - download: current
+            artifact: 'tfplan'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform apply'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '.'
+              environmentServiceNameAzureRM: '$(azureServiceConnection)'
+              args: '-auto-approve'
+              ensureBackend: true
+              enableTelemetry: false
