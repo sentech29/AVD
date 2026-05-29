@@ -1,4 +1,4 @@
-\\# Azure Pipelines YAML file for Terraform deployment
+# Azure Pipelines YAML file for Terraform deployment
 trigger:
   branches:
     include:
