@@ -64,11 +64,24 @@ stages:
       - job: Plan
         displayName: 'Plan Terraform'
         steps:
-          # FIXED: Added installer to this job
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
+
+          # RE-INIT: Necessary for every job on a fresh agent
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendType: 'azurerm'
+              ensureBackend: true
+              backendServiceArm: '$(azureServiceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroupName)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform plan'
@@ -82,7 +95,6 @@ stages:
                 environment=$(environment)
               ensureBackend: true
               enableTelemetry: false
-
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Terraform plan'
@@ -101,18 +113,31 @@ stages:
           - download: current
             artifact: 'tfplan'
 
-          # FIXED: Added installer to this job
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
+
+          # RE-INIT: Necessary for every job on a fresh agent
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendType: 'azurerm'
+              ensureBackend: true
+              backendServiceArm: '$(azureServiceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroupName)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform apply'
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              commandOptions: 'tfplan.out' 
+              commandOptions: 'tfplan.out'
               workingDirectory: '.'
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
               args: '-auto-approve'
