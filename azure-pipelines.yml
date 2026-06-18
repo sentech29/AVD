@@ -123,6 +123,7 @@ stages:
         steps:
           - download: current
             artifact: 'tfplan'
+            path: '$(Build.SourcesDirectory)'
 
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
@@ -148,8 +149,8 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              commandOptions: 'tfplan.out'
-              workingDirectory: '.'
+              workingDirectory: $(Build.SourcesDirectory)
+              commandOptions: $(pipeline.workspace)/tfplan/tfplan.out
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
             env:
               ARM_SUBSCRIPTION_ID: $(subscription-id)
