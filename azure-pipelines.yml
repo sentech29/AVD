@@ -101,13 +101,11 @@ stages:
               commandOptions: '-out=tfplan.out'
               vars: |
                 environment=$(environment)
-              env:
+            env:
                 ARM_SUBSCRIPTION_ID: $(subscription-id)
                 ARM_TENANT_ID: $(tenant-id)
                 ARM_CLIENT_ID: $(client-id)
                 ARM_CLIENT_SECRET: $(client-secretnew)
-              ensureBackend: true
-              enableTelemetry: false
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Terraform plan'
@@ -153,11 +151,8 @@ stages:
               commandOptions: 'tfplan.out'
               workingDirectory: '.'
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
-              env:
-                ARM_SUBSCRIPTION_ID: $(subscription-id)
-                ARM_TENANT_ID: $(tenant-id)
-                ARM_CLIENT_ID: $(client-id)
-                ARM_CLIENT_SECRET: $(client-secretnew) 
-              args: '-auto-approve'
-              ensureBackend: true
-              enableTelemetry: false
+            env:
+              ARM_SUBSCRIPTION_ID: $(subscription-id)
+              ARM_TENANT_ID: $(tenant-id)
+              ARM_CLIENT_ID: $(client-id)
+              ARM_CLIENT_SECRET: $(client-secretnew) 
