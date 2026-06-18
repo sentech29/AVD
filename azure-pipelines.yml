@@ -77,10 +77,13 @@ stages:
               command: 'plan'
               workingDirectory: '.'
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
+              # ADD THIS LINE BELOW
+              commandOptions: '-reconfigure -out=tfplan.out'
               vars: |
                 environment=$(environment)
               ensureBackend: true
               enableTelemetry: false
+
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Terraform plan'
@@ -110,6 +113,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'apply'
+              commandOptions: 'tfplan.out' # Use the plan file generated in the previous stage
               workingDirectory: '.'
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
               args: '-auto-approve'
