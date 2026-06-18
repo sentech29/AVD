@@ -63,11 +63,7 @@ stages:
               backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
               backendAzureRmContainerName: '$(backendContainerName)'
               backendAzureRmKey: '$(backendKey)'
-            env:
-              ARM_CLIENT_ID: $(client-id)
-              ARM_CLIENT_SECRET: $(client-secret)
-              ARM_SUBSCRIPTION_ID: $(subscription-id)
-              ARM_TENANT_ID: $(tenant-id)
+              enableTelemetry: false
 
   - stage: TerraformPlan
     displayName: 'Terraform Plan - ${{ parameters.targetEnvironment }}'
@@ -149,6 +145,11 @@ stages:
               backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
               backendAzureRmContainerName: '$(backendContainerName)'
               backendAzureRmKey: '$(backendKey)'
+            env:
+              ARM_SUBSCRIPTION_ID: $(subscription-id)
+              ARM_TENANT_ID: $(tenant-id)
+              ARM_CLIENT_ID: $(client-id)
+              ARM_CLIENT_SECRET: $(client-secret)
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform apply'
