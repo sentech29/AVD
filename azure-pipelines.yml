@@ -121,21 +121,23 @@ stages:
       - job: Apply
         displayName: 'Apply Terraform'
         steps:
-          - download: current
-            artifact: 'tfplan'
-            path: '$(Build.SourcesDirectory)'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Terraform plan'
+            inputs:
+              artifact: 'tfplan'
+              targetPath: '$(Build.SourcesDirectory)'
 
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
 
-          # RE-INIT: Necessary for every job on a fresh agent
           - task: TerraformTaskV4@4
             displayName: 'Terraform init'
             inputs:
               provider: 'azurerm'
               command: 'init'
+              workingDirectory: '$(Build.SourcesDirectory)'
               backendType: 'azurerm'
               ensureBackend: true
               backendServiceArm: '$(azureServiceConnection)'
@@ -149,11 +151,11 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              workingDirectory: $(Build.SourcesDirectory)
-              commandOptions: $(pipeline.workspace)/tfplan/tfplan.out
+              workingDirectory: '$(Build.SourcesDirectory)'
+              commandOptions: '$(Build.SourcesDirectory)/tfplan.out'
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
             env:
+              ARM_CLIENT_ID: $(client-id)
+              ARM_CLIENT_SECRET: $(client-secret)
               ARM_SUBSCRIPTION_ID: $(subscription-id)
               ARM_TENANT_ID: $(tenant-id)
-              ARM_CLIENT_ID: $(client-id)
-              ARM_CLIENT_SECRET: $(client-secretnew) 
