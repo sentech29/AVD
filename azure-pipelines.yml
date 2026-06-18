@@ -102,7 +102,7 @@ stages:
               environmentServiceNameAzureRM: $(azureServiceConnection)
               args: '-auto-approve'
             env:
-              ARM_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
-              ARM_TENANT_ID: $(AZURE_TENANT_ID)
-              ARM_CLIENT_ID: $(AZURE_CLIENT_ID)
-              ARM_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+              ARM_SUBSCRIPTION_ID: $(subscription-Id)
+              ARM_TENANT_ID: $(tenent-Id)
+              ARM_CLIENT_ID: $(client-Id)
+              ARM_CLIENT_SECRET: $(client-secretnew)
