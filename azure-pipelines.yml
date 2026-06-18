@@ -55,7 +55,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: '.'
+              workingDirectory: $(Build.SourcesDirectory)
               backendType: 'azurerm'
               ensureBackend: true
               backendServiceArm: '$(azureServiceConnection)'
@@ -63,7 +63,11 @@ stages:
               backendAzureRmStorageAccountName: '$(backendStorageAccountName)'
               backendAzureRmContainerName: '$(backendContainerName)'
               backendAzureRmKey: '$(backendKey)'
-              enableTelemetry: false
+            env:
+              ARM_CLIENT_ID: $(client-id)
+              ARM_CLIENT_SECRET: $(client-secret)
+              ARM_SUBSCRIPTION_ID: $(subscription-id)
+              ARM_TENANT_ID: $(tenant-id)
 
   - stage: TerraformPlan
     displayName: 'Terraform Plan - ${{ parameters.targetEnvironment }}'
