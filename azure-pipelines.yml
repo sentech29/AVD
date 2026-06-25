@@ -149,7 +149,7 @@ stages:
               ARM_SUBSCRIPTION_ID: $(subscription-id)
               ARM_TENANT_ID: $(tenant-id)
               ARM_CLIENT_ID: $(client-id)
-              ARM_CLIENT_SECRET: $(client-secret)
+              ARM_CLIENT_SECRET: $(client-secretnew)
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform apply'
@@ -161,6 +161,6 @@ stages:
               environmentServiceNameAzureRM: '$(azureServiceConnection)'
             env:
               ARM_CLIENT_ID: $(client-id)
-              ARM_CLIENT_SECRET: $(client-secret)
+              ARM_CLIENT_SECRET: $(client-secretnew)
               ARM_SUBSCRIPTION_ID: $(subscription-id)
               ARM_TENANT_ID: $(tenant-id)
